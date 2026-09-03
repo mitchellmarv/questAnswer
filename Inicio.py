@@ -8,12 +8,11 @@ from nltk.stem import SnowballStemmer
 # Configuración de la página
 st.set_page_config(page_title="Hotel Transilvania - Demo TF-IDF", layout="wide")
 
-# Título con imagen
-col_title, col_img = st.columns([4, 1])
-with col_title:
-    st.title("🧛 Demo TF-IDF en el Hotel Transilvania")
-with col_img:
-    st.image("castle.jpg", width=100)
+# Título
+st.title("🧛 Demo TF-IDF en el Hotel Transilvania")
+
+# Imagen grande debajo del título
+st.image("castle.jpg", use_container_width=True)
 
 st.markdown("---")
 
@@ -135,7 +134,14 @@ if st.button("🔍 Buscar monstruo", type="primary"):
             # Mostrar un mensaje más amigable
             monstruo = best_doc.split('está')[0].strip() if 'está' in best_doc else best_doc.split('en')[0].strip()
             st.balloons()
-            st.markdown(f"### 🏨 El monstruo está en el cuarto {cuarto}!")
+            
+            # Mostrar el resultado de forma destacada
+            st.markdown(f"""
+            <div style='background-color: #2e2e2e; padding: 20px; border-radius: 10px; border: 2px solid #ff6b6b;'>
+                <h2 style='color: #ff6b6b; text-align: center;'>🏨 ¡ENCONTRADO!</h2>
+                <h3 style='color: white; text-align: center;'>{monstruo} está en el cuarto {cuarto} 🎉</h3>
+            </div>
+            """, unsafe_allow_html=True)
         else:
             st.success(f"**Respuesta:** {best_doc}")
             st.info(f"📈 Similitud: {best_score:.3f}")
