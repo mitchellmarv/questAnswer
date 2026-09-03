@@ -47,45 +47,53 @@ col1, col2 = st.columns([2, 1])
 
 with col1:
     text_input = st.text_area("📝 Habitaciones del hotel (uno por línea):", default_docs, height=200)
-    question = st.text_input("❓ Escribe tu pregunta:", "¿Dónde está el hombre lobo?")
+    question = st.text_input("❓ Escribe tu pregunta:", "¿Quién está en el cuarto 305?")
 
 with col2:
     st.markdown("### 💡 Preguntas sugeridas:")
     
-    # Preguntas sobre los monstruos
-    if st.button("🦁 ¿Dónde está el hombre lobo?", use_container_width=True):
-        st.session_state.question = "¿Dónde está el hombre lobo?"
+    # Preguntas sobre los cuartos
+    if st.button("🔢 ¿Quién está en el cuarto 101?", use_container_width=True):
+        st.session_state.question = "¿Quién está en el cuarto 101?"
         st.rerun()
     
-    if st.button("🧛 ¿Dónde está el conde Drácula?", use_container_width=True):
-        st.session_state.question = "¿Dónde está el conde Drácula?"
+    if st.button("🔢 ¿Quién está en el cuarto 202?", use_container_width=True):
+        st.session_state.question = "¿Quién está en el cuarto 202?"
         st.rerun()
         
-    if st.button("🧟 ¿Dónde está Frankestein?", use_container_width=True):
-        st.session_state.question = "¿Dónde está Frankestein?"
+    if st.button("🔢 ¿Quién está en el cuarto 305?", use_container_width=True):
+        st.session_state.question = "¿Quién está en el cuarto 305?"
         st.rerun()
         
-    if st.button("🧙 ¿Dónde está la bruja?", use_container_width=True):
-        st.session_state.question = "¿Dónde está la bruja?"
+    if st.button("🔢 ¿Quién está en el cuarto 408?", use_container_width=True):
+        st.session_state.question = "¿Quién está en el cuarto 408?"
         st.rerun()
         
-    if st.button("👻 ¿Dónde está el fantasma?", use_container_width=True):
-        st.session_state.question = "¿Dónde está el fantasma?"
+    if st.button("🔢 ¿Quién está en el cuarto 512?", use_container_width=True):
+        st.session_state.question = "¿Quién está en el cuarto 512?"
         st.rerun()
     
-    if st.button("💀 ¿Dónde está el esqueleto?", use_container_width=True):
-        st.session_state.question = "¿Dónde está el esqueleto?"
+    if st.button("🔢 ¿Quién está en el cuarto 618?", use_container_width=True):
+        st.session_state.question = "¿Quién está en el cuarto 618?"
         st.rerun()
     
-    if st.button("🐺 ¿Dónde está el yeti?", use_container_width=True):
-        st.session_state.question = "¿Dónde está el yeti?"
+    if st.button("🔢 ¿Quién está en el cuarto 723?", use_container_width=True):
+        st.session_state.question = "¿Quién está en el cuarto 723?"
+        st.rerun()
+    
+    if st.button("🔢 ¿Quién está en el cuarto 831?", use_container_width=True):
+        st.session_state.question = "¿Quién está en el cuarto 831?"
+        st.rerun()
+    
+    if st.button("🔢 ¿Quién está en el cuarto 945?", use_container_width=True):
+        st.session_state.question = "¿Quién está en el cuarto 945?"
         st.rerun()
 
 # Actualizar pregunta si se seleccionó una sugerida
 if 'question' in st.session_state:
     question = st.session_state.question
 
-if st.button("🔍 Buscar monstruo", type="primary"):
+if st.button("🔍 Buscar en el hotel", type="primary"):
     documents = [d.strip() for d in text_input.split("\n") if d.strip()]
     
     if len(documents) < 1:
@@ -121,30 +129,41 @@ if st.button("🔍 Buscar monstruo", type="primary"):
         best_score = similarities[best_idx]
         
         # Mostrar respuesta
-        st.markdown("### 🎯 Monstruo encontrado")
+        st.markdown("### 🎯 Habitación encontrada")
         st.markdown(f"**Tu pregunta:** {question}")
         
-        # Extraer el número de cuarto de la respuesta
-        cuarto_match = re.search(r'cuarto (\d+)', best_doc)
-        if cuarto_match:
-            cuarto = cuarto_match.group(1)
-            st.success(f"**Respuesta:** {best_doc}")
-            st.info(f"📈 Similitud: {best_score:.3f}")
+        # Extraer el número de cuarto de la pregunta
+        cuarto_pregunta = re.search(r'cuarto (\d+)', question)
+        if cuarto_pregunta:
+            cuarto_buscado = cuarto_pregunta.group(1)
             
-            # Mostrar un mensaje más amigable
-            monstruo = best_doc.split('está')[0].strip() if 'está' in best_doc else best_doc.split('en')[0].strip()
-            st.balloons()
+            # Buscar si el cuarto existe en los documentos
+            cuarto_encontrado = False
+            for doc in documents:
+                if f"cuarto {cuarto_buscado}" in doc.lower():
+                    cuarto_encontrado = True
+                    st.success(f"**Respuesta:** {doc}")
+                    st.info(f"📈 Similitud: {best_score:.3f}")
+                    
+                    # Mostrar el resultado de forma destacada
+                    st.markdown(f"""
+                    <div style='background-color: #2e2e2e; padding: 20px; border-radius: 10px; border: 2px solid #ff6b6b;'>
+                        <h2 style='color: #ff6b6b; text-align: center;'>🏨 ¡HABITACIÓN ENCONTRADA!</h2>
+                        <h3 style='color: white; text-align: center;'>En el cuarto {cuarto_buscado} está: {doc.split('está')[0].strip() if 'está' in doc else doc.split('en')[0].strip()} 🎉</h3>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.balloons()
+                    break
             
-            # Mostrar el resultado de forma destacada
-            st.markdown(f"""
-            <div style='background-color: #2e2e2e; padding: 20px; border-radius: 10px; border: 2px solid #ff6b6b;'>
-                <h2 style='color: #ff6b6b; text-align: center;'>🏨 ¡ENCONTRADO!</h2>
-                <h3 style='color: white; text-align: center;'>{monstruo} está en el cuarto {cuarto} 🎉</h3>
-            </div>
-            """, unsafe_allow_html=True)
+            if not cuarto_encontrado:
+                # Si no se encuentra el cuarto exacto, mostrar la mejor coincidencia
+                st.warning(f"No se encontró el cuarto {cuarto_buscado} exactamente, pero la mejor coincidencia es:")
+                st.success(f"**{best_doc}**")
+                st.info(f"📈 Similitud: {best_score:.3f}")
         else:
+            # Si la pregunta no tiene número de cuarto, mostrar la mejor coincidencia
             st.success(f"**Respuesta:** {best_doc}")
             st.info(f"📈 Similitud: {best_score:.3f}")
 
 st.markdown("---")
-st.caption("🧛 Hotel Transilvania - Encuentra a tus monstruos favoritos usando TF-IDF")
+st.caption("🧛 Hotel Transilvania - Encuentra quién está en cada habitación usando TF-IDF")
